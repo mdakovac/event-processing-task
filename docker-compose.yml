@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   generator:
-    image: golang:1.17-alpine
+    image: golang:latest
     working_dir: /app
     command: ["go", "run", "internal/cmd/generator/main.go"]
     volumes:
@@ -15,5 +15,7 @@ services:
     environment:
       - POSTGRES_USER=casino
       - POSTGRES_PASSWORD=casino
+    ports:
+      - "5432:5432"
     volumes:
       - "./db:/db"
