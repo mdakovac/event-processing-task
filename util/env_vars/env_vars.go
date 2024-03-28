@@ -14,8 +14,6 @@ type EnvVariablesType struct {
 var EnvVariables EnvVariablesType
 
 func SetEnvVars() {
-	log.Println("SETTING ENV VARS")
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
