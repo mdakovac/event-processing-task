@@ -5,10 +5,14 @@ services:
     image: golang:latest
     working_dir: /app
     command: ["go", "run", "internal/cmd/generator/main.go"]
+    environment:
+      - PUBSUB_EMULATOR_HOST=pubsub:8085
     volumes:
       - ".:/app"
     profiles:
       - manual
+    depends_on:
+      - pubsub
 
   database:
     image: postgres:14-alpine
