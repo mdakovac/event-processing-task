@@ -9,6 +9,7 @@ import (
 
 	"github.com/Bitstarz-eng/event-processing-challenge/cache_service"
 	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/currency/currency_models"
+	"github.com/Bitstarz-eng/event-processing-challenge/util/env_vars"
 )
 
 type CurrencyRepository struct {
@@ -40,7 +41,7 @@ func (repository *CurrencyRepository) GetExchangeRates() (currency_models.Exchan
 }
 
 func findFromApi() (currency_models.ExchangeRates, error) {
-	response, err := http.Get("https://7o5yo.wiremockapi.cloud/exchange-rates")
+	response, err := http.Get(env_vars.EnvVariables.EXCHANGE_RATES_API_URL + "/exchange-rates")
 	if err != nil {
 		return nil, err
 	}

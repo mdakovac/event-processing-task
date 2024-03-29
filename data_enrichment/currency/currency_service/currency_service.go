@@ -3,7 +3,6 @@ package currency_service
 import (
 	"math"
 
-	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/currency/currency_models"
 	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/currency/currency_repository"
 	"github.com/Bitstarz-eng/event-processing-challenge/internal/casino"
 )
@@ -13,7 +12,7 @@ type CurrencyService struct {
 }
 
 type CurrencyServiceType interface {
-	GetExchangeRates() (currency_models.ExchangeRates, error)
+	ConvertCurrency(event *casino.Event) (*casino.Event, error)
 }
 
 func (service *CurrencyService) ConvertCurrency(event *casino.Event) (*casino.Event, error) {
@@ -27,7 +26,7 @@ func (service *CurrencyService) ConvertCurrency(event *casino.Event) (*casino.Ev
 	} else {
 		exchangeRates, err := service.repository.GetExchangeRates()
 		if err != nil {
-			return nil, err
+			return event, err
 		}
 
 		const conversionConstant float64 = 100
