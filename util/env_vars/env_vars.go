@@ -8,8 +8,9 @@ import (
 )
 
 type EnvVariablesType struct {
-	PUBSUB_EMULATOR_HOST string
-	PUBSUB_PROJECT_ID    string
+	PUBSUB_EMULATOR_HOST   string
+	PUBSUB_PROJECT_ID      string
+	EXCHANGE_RATES_API_URL string
 }
 
 var EnvVariables EnvVariablesType
@@ -24,4 +25,5 @@ func SetEnvVars() {
 
 	EnvVariables.PUBSUB_EMULATOR_HOST = os.Getenv("PUBSUB_EMULATOR_HOST")
 	EnvVariables.PUBSUB_PROJECT_ID = os.Getenv("PUBSUB_PROJECT_ID")
+	EnvVariables.EXCHANGE_RATES_API_URL = os.Getenv("EXCHANGE_RATES_API_URL")
 }

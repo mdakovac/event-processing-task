@@ -5,6 +5,7 @@ go 1.22.1
 require (
 	cloud.google.com/go/pubsub v1.37.0
 	github.com/joho/godotenv v1.5.1
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	golang.org/x/net v0.21.0
 )
 

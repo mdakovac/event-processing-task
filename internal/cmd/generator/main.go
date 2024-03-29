@@ -1,8 +1,7 @@
 package main
 
 import (
-	"bytes"
-	"encoding/gob"
+	"encoding/json"
 	"log"
 	"time"
 
@@ -22,13 +21,14 @@ func main() {
 	for event := range eventCh {
 		log.Printf("%#v\n", event)
 
-		var inputBuffer bytes.Buffer
-		gob.NewEncoder(&inputBuffer).Encode(event)
-		topics["CasinoEvent.create"].Publish(ctx, &pubsub.Message{Data: inputBuffer.Bytes()})
+		msgJson, err := json.Marshal(event)
+		if err != nil {
+			log.Fatalf("Failed to marshal message: %v", err)
+		}
 
+		topics["CasinoEvent.create"].Publish(ctx, &pubsub.Message{Data: msgJson})
 	}
 
 	topics["CasinoEvent.create"].Stop()
 	log.Println("finished")
-
 }
