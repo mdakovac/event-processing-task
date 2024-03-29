@@ -17,12 +17,7 @@ func main() {
 	client, topics := pubsub.Setup()
 
 	subscriptionId := "data_enrichment_service.subscription"
-
 	subscription := pubsub.GetSubscription(client, subscriptionId, topics["CasinoEvent.create"])
-
-	// Create a channel to handle shutdown signals
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 
 	// Start receiving messages
 	go func() {
@@ -34,10 +29,11 @@ func main() {
 			log.Fatalf("Error receiving message: %v", err)
 		}
 	}()
-
 	fmt.Println("Pub/Sub listener started")
 
-	// Wait for shutdown signal
+	// Create a channel to handle shutdown signals
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 	<-stop
 
 	fmt.Println("Shutting down Pub/Sub listener")
