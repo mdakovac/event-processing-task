@@ -1,4 +1,4 @@
-.PHONY: all up migrate generate
+.PHONY: all up migrate generator fmt
 
 all: up migrate
 
@@ -10,3 +10,6 @@ migrate:
 
 generator:
 	docker-compose run --rm generator
+
+fmt:
+	go fmt ./...

@@ -5,20 +5,27 @@ import (
 	"log"
 
 	"cloud.google.com/go/pubsub"
+	"github.com/Bitstarz-eng/event-processing-challenge/util/env_vars"
 )
 
-type PubsubClientType = pubsub.Client
-type PubsubTopicType = pubsub.Topic
-type PubsubMessageType = pubsub.Message
+type Client = pubsub.Client
+type Topic = pubsub.Topic
+type Message = pubsub.Message
 
-func Setup(projectId string) (*PubsubClientType, map[string]*PubsubTopicType) {
+type Subscription = pubsub.Subscription
+type SubscriptionConfig = pubsub.SubscriptionConfig
+
+func Setup() (*Client, map[string]*Topic) {
+	env_vars.SetEnvVars()
+	projectId := env_vars.EnvVariables.PUBSUB_PROJECT_ID
+
 	client := CreateClient(projectId)
-	topics := CreateTopics(client)
+	topics := GetTopics(client)
 
 	return client, topics
 }
 
-func CreateClient(projectId string) *PubsubClientType {
+func CreateClient(projectId string) *Client {
 	ctx := context.Background()
 
 	// Create a Pub/Sub client
@@ -30,10 +37,10 @@ func CreateClient(projectId string) *PubsubClientType {
 	return client
 }
 
-func CreateTopics(client *PubsubClientType) map[string]*PubsubTopicType {
+func GetTopics(client *Client) map[string]*Topic {
 	topicNames := []string{"CasinoEvent.create"}
 
-	topics := make(map[string]*PubsubTopicType)
+	topics := make(map[string]*Topic)
 	for _, v := range topicNames {
 		topic := createTopicIfNotExists(client, v)
 		topics[v] = topic
@@ -42,16 +49,40 @@ func CreateTopics(client *PubsubClientType) map[string]*PubsubTopicType {
 	return topics
 }
 
-func createTopicIfNotExists(client *PubsubClientType, t string) *PubsubTopicType{
+func GetSubscription(client *Client, subscriptionId string, topic *Topic) *Subscription {
+	ctx := context.Background()
+
+	subscription := client.Subscription("data_enrichment_service.subscription")
+	exists, err := subscription.Exists(ctx)
+	if err != nil {
+		log.Fatalf("Failed to check if subscription exists: %v", err)
+	}
+
+	if exists {
+		return subscription
+	} else {
+		log.Println("Creating subscription")
+		subscription, err = client.CreateSubscription(ctx, subscriptionId, pubsub.SubscriptionConfig{
+			Topic: topic,
+		})
+		if err != nil {
+			log.Fatalf("Failed to create subscription: %v", err)
+		}
+
+		return subscription
+	}
+}
+
+func createTopicIfNotExists(client *Client, t string) *Topic {
 	ctx := context.Background()
 
 	topic := client.Topic(t)
-	ok, err := topic.Exists(ctx)
+	exists, err := topic.Exists(ctx)
 	if err != nil {
 		log.Fatalf("Failed to check if topic exists: %v", err)
 	}
 
-	if ok{
+	if exists {
 		return topic
 	} else {
 		topic, err := client.CreateTopic(ctx, t)
