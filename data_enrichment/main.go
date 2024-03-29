@@ -13,13 +13,24 @@ import (
 	"github.com/Bitstarz-eng/event-processing-challenge/cache_service"
 	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/currency/currency_repository"
 	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/currency/currency_service"
+	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/player/player_repository"
+	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/player/player_service"
+	"github.com/Bitstarz-eng/event-processing-challenge/db"
 	"github.com/Bitstarz-eng/event-processing-challenge/internal/casino"
 	"github.com/Bitstarz-eng/event-processing-challenge/pubsub"
+	"github.com/Bitstarz-eng/event-processing-challenge/util/env_vars"
 )
 
 func main() {
+	env_vars.SetEnvVars()
+
+	db := db.Connect()
+
 	var currencyRepository = currency_repository.NewCurrencyRepository(cache_service.CreateCache(1*time.Minute, 1*time.Minute))
 	var currencyService = currency_service.NewCurrencyService(currencyRepository)
+
+	var playerRepository = player_repository.NewPlayerRepository(db)
+	var playerService = player_service.NewPlayerService(playerRepository)
 
 	ctx := context.Background()
 
@@ -40,9 +51,12 @@ func main() {
 				return
 			}
 
-			var eventPointer = &event
+			_, err := currencyService.ConvertCurrency(&event)
+			if err != nil {
+				log.Println(err)
+			}
 
-			_, err := currencyService.ConvertCurrency(eventPointer)
+			_, err = playerService.AssignPlayerData(&event)
 			if err != nil {
 				log.Println(err)
 			}
