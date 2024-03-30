@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Bitstarz-eng/event-processing-challenge/cache_service"
-	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/currency/currency_models"
+	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/currency/currency_models"
 	"github.com/Bitstarz-eng/event-processing-challenge/util/env_vars"
 )
 

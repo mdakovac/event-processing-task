@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/currency/currency_service"
+	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/currency/currency_service"
 	"github.com/Bitstarz-eng/event-processing-challenge/internal/casino"
 )
 

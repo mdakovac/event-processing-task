@@ -3,7 +3,7 @@ package currency_service
 import (
 	"log"
 
-	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/currency/currency_repository"
+	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/currency/currency_repository"
 	"github.com/Bitstarz-eng/event-processing-challenge/internal/casino"
 	"github.com/Bitstarz-eng/event-processing-challenge/util/math_utils"
 )

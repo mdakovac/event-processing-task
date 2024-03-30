@@ -11,11 +11,11 @@ import (
 	"time"
 
 	"github.com/Bitstarz-eng/event-processing-challenge/cache_service"
-	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/currency/currency_repository"
-	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/currency/currency_service"
-	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/description/description_service"
-	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/player/player_repository"
-	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/player/player_service"
+	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/currency/currency_repository"
+	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/currency/currency_service"
+	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/description/description_service"
+	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/player/player_repository"
+	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/player/player_service"
 	"github.com/Bitstarz-eng/event-processing-challenge/db"
 	"github.com/Bitstarz-eng/event-processing-challenge/internal/casino"
 	"github.com/Bitstarz-eng/event-processing-challenge/pubsub"
@@ -39,7 +39,7 @@ func main() {
 
 	client, topics := pubsub.Setup()
 
-	subscriptionId := "data_enrichment_service.subscription"
+	subscriptionId := "data_processing_service.subscription"
 	subscription := pubsub.GetSubscription(client, subscriptionId, topics["CasinoEvent.create"])
 
 	// Start receiving messages

@@ -52,7 +52,7 @@ func GetTopics(client *Client) map[string]*Topic {
 func GetSubscription(client *Client, subscriptionId string, topic *Topic) *Subscription {
 	ctx := context.Background()
 
-	subscription := client.Subscription("data_enrichment_service.subscription")
+	subscription := client.Subscription("data_processing_service.subscription")
 	exists, err := subscription.Exists(ctx)
 	if err != nil {
 		log.Fatalf("Failed to check if subscription exists: %v", err)

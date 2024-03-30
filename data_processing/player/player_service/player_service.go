@@ -3,7 +3,7 @@ package player_service
 import (
 	"log"
 
-	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/player/player_repository"
+	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/player/player_repository"
 	"github.com/Bitstarz-eng/event-processing-challenge/internal/casino"
 )
 
