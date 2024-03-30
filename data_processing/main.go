@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/Bitstarz-eng/event-processing-challenge/cache_service"
+	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/aggregation/aggregation_service"
 	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/currency/currency_repository"
 	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/currency/currency_service"
 	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/description/description_service"
@@ -35,6 +36,8 @@ func main() {
 
 	var descriptionService = description_service.NewDescriptionService(currencyService)
 
+	var aggregationService = aggregation_service.NewAggregationService()
+
 	ctx := context.Background()
 
 	client, topics := pubsub.Setup()
@@ -58,8 +61,13 @@ func main() {
 			playerService.AssignPlayerData(&event)
 			descriptionService.AssignDescription(&event)
 
-			forPrint, _ := json.MarshalIndent(event, "", "    ")
-			log.Println("Enriched event", string(forPrint))
+			aggregationService.AddEventToAggregation(&event)
+
+			forPrint1, _ := json.MarshalIndent(aggregationService.GetAggregation(), "", "    ")
+			log.Println("Aggregation event", string(forPrint1))
+
+			//forPrint, _ := json.MarshalIndent(event, "", "    ")
+			//log.Println("Enriched event", string(forPrint))
 
 			msg.Ack()
 		})
