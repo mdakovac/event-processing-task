@@ -1,10 +1,11 @@
 package currency_service
 
 import (
-	"math"
+	"log"
 
 	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/currency/currency_repository"
 	"github.com/Bitstarz-eng/event-processing-challenge/internal/casino"
+	"github.com/Bitstarz-eng/event-processing-challenge/util/math_utils"
 )
 
 type CurrencyService struct {
@@ -13,7 +14,11 @@ type CurrencyService struct {
 
 type CurrencyServiceType interface {
 	ConvertCurrency(event *casino.Event) (*casino.Event, error)
+	ConvertAmountToFloat(amount int, currency string) float64
 }
+
+const conversionConstant float64 = 100
+const btcConversionConstant float64 = 100000000
 
 func (service *CurrencyService) ConvertCurrency(event *casino.Event) (*casino.Event, error) {
 	if event.Type != "bet" && event.Type != "deposit" {
@@ -26,33 +31,28 @@ func (service *CurrencyService) ConvertCurrency(event *casino.Event) (*casino.Ev
 	} else {
 		exchangeRates, err := service.repository.GetExchangeRates()
 		if err != nil {
+			log.Println("Error getting exchange rates", err)
 			return event, err
 		}
 
-		const conversionConstant float64 = 100
-		const btcConversionConstant float64 = 100000000
+		amountFloat := service.ConvertAmountToFloat(event.Amount, event.Currency)
 
-		var amountFloat float64
-		if event.Currency == "BTC" {
-			amountFloat = float64(event.Amount) / btcConversionConstant
-		} else {
-			amountFloat = float64(event.Amount) / conversionConstant
-		}
-
-		amountEurFloat := toFixed(amountFloat*exchangeRates[event.Currency], 2)
+		amountEurFloat := math_utils.ToFixed(amountFloat*exchangeRates[event.Currency], 2)
 		event.AmountEUR = int(amountEurFloat * conversionConstant)
 	}
 
 	return event, nil
 }
 
-func round(num float64) int {
-	return int(num + math.Copysign(0.5, num))
-}
+func (*CurrencyService) ConvertAmountToFloat(amount int, currency string) float64 {
+	var amountFloat float64
+	if currency == "BTC" {
+		amountFloat = float64(amount) / btcConversionConstant
+	} else {
+		amountFloat = float64(amount) / conversionConstant
+	}
 
-func toFixed(num float64, precision int) float64 {
-	output := math.Pow(10, float64(precision))
-	return float64(round(num*output)) / output
+	return amountFloat
 }
 
 func NewCurrencyService(repository currency_repository.CurrencyRepositoryType) *CurrencyService {

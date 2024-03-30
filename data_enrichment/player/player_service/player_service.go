@@ -18,7 +18,7 @@ type PlayerServiceType interface {
 func (service *PlayerService) AssignPlayerData(event *casino.Event) (*casino.Event, error) {
 	player, err := service.repository.FindById(event.PlayerID)
 	if err != nil {
-		log.Println("Unable to find Player Data for event", event)
+		log.Printf("Unable to find Player Data for event id %v", event.ID)
 		return event, err
 	}
 

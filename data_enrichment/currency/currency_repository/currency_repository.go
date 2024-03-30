@@ -3,7 +3,6 @@ package currency_repository
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"time"
 
@@ -25,11 +24,9 @@ func (repository *CurrencyRepository) GetExchangeRates() (currency_models.Exchan
 
 	exchangeRates = findFromCache(repository.cache)
 	if exchangeRates != nil {
-		log.Println("Found cached Exchange Rates, returning")
 		return exchangeRates, nil
 	}
 
-	log.Println("Fetching Exchange Rates from API")
 	exchangeRates, err := findFromApi()
 	if err != nil {
 		return nil, err

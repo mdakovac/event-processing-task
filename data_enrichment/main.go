@@ -13,6 +13,7 @@ import (
 	"github.com/Bitstarz-eng/event-processing-challenge/cache_service"
 	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/currency/currency_repository"
 	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/currency/currency_service"
+	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/description/description_service"
 	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/player/player_repository"
 	"github.com/Bitstarz-eng/event-processing-challenge/data_enrichment/player/player_service"
 	"github.com/Bitstarz-eng/event-processing-challenge/db"
@@ -32,6 +33,8 @@ func main() {
 	var playerRepository = player_repository.NewPlayerRepository(db)
 	var playerService = player_service.NewPlayerService(playerRepository)
 
+	var descriptionService = description_service.NewDescriptionService(currencyService)
+
 	ctx := context.Background()
 
 	client, topics := pubsub.Setup()
@@ -42,7 +45,7 @@ func main() {
 	// Start receiving messages
 	go func() {
 		err := subscription.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
-			fmt.Printf("Received message: %s\n", string(msg.Data))
+			//fmt.Printf("Received message: %s\n", string(msg.Data))
 
 			var event casino.Event
 			if err := json.Unmarshal(msg.Data, &event); err != nil {
@@ -51,15 +54,12 @@ func main() {
 				return
 			}
 
-			_, err := currencyService.ConvertCurrency(&event)
-			if err != nil {
-				log.Println(err)
-			}
+			currencyService.ConvertCurrency(&event)
+			playerService.AssignPlayerData(&event)
+			descriptionService.AssignDescription(&event)
 
-			_, err = playerService.AssignPlayerData(&event)
-			if err != nil {
-				log.Println(err)
-			}
+			forPrint, _ := json.MarshalIndent(event, "", "    ")
+			log.Println("Enriched event", string(forPrint))
 
 			msg.Ack()
 		})
