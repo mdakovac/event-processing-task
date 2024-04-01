@@ -21,10 +21,10 @@ type AggregationService struct {
 	mutex sync.RWMutex
 }
 
-/* type AggregationServiceType interface {
-	ConvertCurrency(event *casino.Event) (*casino.Event, error)
-	ConvertAmountToFloat(amount int, currency string) float64
-} */
+type AggregationServiceType interface {
+	AddEventToAggregation(event *casino.Event)
+	GetAggregation() *aggregation_models.Aggregation
+}
 
 func (service *AggregationService) AddEventToAggregation(event *casino.Event) {
 	service.mutex.Lock()
@@ -56,7 +56,7 @@ func (service *AggregationService) AddEventToAggregation(event *casino.Event) {
 }
 
 func (service *AggregationService) GetAggregation() *aggregation_models.Aggregation {
-	// stil need RW Lock since getting the Aggregation also updates fields which are time-dependent
+	// stil need RW Lock since getting the Aggregation also updates fields
 	service.mutex.Lock()
 	defer service.mutex.Unlock()
 

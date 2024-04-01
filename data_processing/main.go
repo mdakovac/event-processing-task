@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -11,6 +10,7 @@ import (
 	"time"
 
 	"github.com/Bitstarz-eng/event-processing-challenge/cache_service"
+	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/aggregation/aggregation_controller"
 	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/aggregation/aggregation_service"
 	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/currency/currency_repository"
 	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/currency/currency_service"
@@ -21,6 +21,7 @@ import (
 	"github.com/Bitstarz-eng/event-processing-challenge/internal/casino"
 	"github.com/Bitstarz-eng/event-processing-challenge/pubsub"
 	"github.com/Bitstarz-eng/event-processing-challenge/util/env_vars"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -45,7 +46,6 @@ func main() {
 	subscriptionId := "data_processing_service.subscription"
 	subscription := pubsub.GetSubscription(client, subscriptionId, topics["CasinoEvent.create"])
 
-	// Start receiving messages
 	go func() {
 		err := subscription.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
 			//fmt.Printf("Received message: %s\n", string(msg.Data))
@@ -75,12 +75,18 @@ func main() {
 			log.Fatalf("Error receiving message: %v", err)
 		}
 	}()
-	fmt.Println("Pub/Sub listener started")
 
-	// Create a channel to handle shutdown signals
+	log.Println("Pub/Sub listener started")
+
+
+	// Setup Gin router
+	router := gin.Default()
+	aggregation_controller.SetupAggregationController(router, aggregationService)
+	router.Run("localhost:8080")
+
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 	<-stop
 
-	fmt.Println("Shutting down Pub/Sub listener")
+	log.Println("Shutting down Pub/Sub listener")
 }
