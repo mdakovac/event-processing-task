@@ -39,43 +39,26 @@ func main() {
 
 	var aggregationService = aggregation_service.NewAggregationService()
 
-	ctx := context.Background()
-
 	client, topics := pubsub.Setup()
 
 	subscriptionId := "data_processing_service.subscription"
 	subscription := pubsub.GetSubscription(client, subscriptionId, topics["CasinoEvent.create"])
 
 	go func() {
-		err := subscription.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
+		err := subscription.Receive(context.Background(), func(ctx context.Context, msg *pubsub.Message) {
 			//fmt.Printf("Received message: %s\n", string(msg.Data))
 
-			var event casino.Event
-			if err := json.Unmarshal(msg.Data, &event); err != nil {
-				log.Printf("Failed to unmarshal message data: %v", err)
+			err := handleMessageReceived(msg.Data, currencyService, playerService, descriptionService, aggregationService)
+			if err != nil {
 				msg.Nack()
-				return
+			}else{
+				msg.Ack()
 			}
-
-			currencyService.ConvertCurrency(&event)
-			playerService.AssignPlayerData(&event)
-			descriptionService.AssignDescription(&event)
-
-			aggregationService.AddEventToAggregation(&event)
-
-			forPrint1, _ := json.MarshalIndent(aggregationService.GetAggregation(), "", "    ")
-			log.Println("Aggregation event", string(forPrint1))
-
-			//forPrint, _ := json.MarshalIndent(event, "", "    ")
-			//log.Println("Enriched event", string(forPrint))
-
-			msg.Ack()
 		})
 		if err != nil {
-			log.Fatalf("Error receiving message: %v", err)
+			log.Printf("Error receiving message: %v", err)
 		}
 	}()
-
 	log.Println("Pub/Sub listener started")
 
 
@@ -89,4 +72,28 @@ func main() {
 	<-stop
 
 	log.Println("Shutting down Pub/Sub listener")
+}
+
+func handleMessageReceived(
+	data []byte, 
+	currencyService *currency_service.CurrencyService, 
+	playerService *player_service.PlayerService, 
+	descriptionService *description_service.DescriptionService, 
+	aggregationService *aggregation_service.AggregationService,
+) error {
+	var event casino.Event
+	if err := json.Unmarshal(data, &event); err != nil {
+		log.Printf("Failed to unmarshal message data: %v", err)
+		return err
+	}
+
+	currencyService.ConvertCurrency(&event)
+	playerService.AssignPlayerData(&event)
+	descriptionService.AssignDescription(&event)
+
+	aggregationService.AddEventToAggregation(&event)
+
+	forPrint, _ := json.MarshalIndent(event, "", "    ")
+	log.Println("Enriched event", string(forPrint))
+	return nil
 }
