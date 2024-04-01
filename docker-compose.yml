@@ -3,16 +3,35 @@ version: "3.8"
 services:
   generator:
     image: golang:latest
-    working_dir: /app
+    working_dir: /app/generator
     command: ["go", "run", "internal/cmd/generator/main.go"]
     environment:
       - PUBSUB_EMULATOR_HOST=pubsub:8085
     volumes:
-      - ".:/app"
+      - ".:/app/generator"
     profiles:
       - manual
     depends_on:
       - pubsub
+
+  data_processing:
+    image: golang:latest
+    working_dir: /app/data_processing
+    command: ["go", "run", "data_processing/main.go"]
+    environment:
+      - PUBSUB_EMULATOR_HOST=pubsub:8085
+      - PUBSUB_PROJECT_ID=event-processing-challenge
+      - EXCHANGE_RATES_API_URL=https://7o5yo.wiremockapi.cloud
+      - DB_CONNECTION_URL=postgresql://casino:casino@database:5432/casino
+    volumes:
+      - ".:/app/data_processing"
+    ports:
+      - "7777:7777"
+    profiles:
+      - manual
+    depends_on:
+      - pubsub
+      - database
 
   database:
     image: postgres:14-alpine

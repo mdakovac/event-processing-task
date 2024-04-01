@@ -1,4 +1,4 @@
-.PHONY: all up migrate generator fmt
+.PHONY: all up migrate generator data_processing fmt
 
 all: up migrate
 
@@ -7,6 +7,9 @@ up:
 
 migrate:
 	docker-compose exec database sh -c 'psql -U casino < /db/migrations/00001.create_base.sql'
+
+data_processing:
+	docker-compose run --rm data_processing
 
 generator:
 	docker-compose run --rm generator
