@@ -8,7 +8,7 @@ import (
 )
 
 type PlayerRepository struct {
-	conn *db.DbConnection
+	conn *db.DbConnectionPool
 }
 
 type PlayerRepositoryType interface {
@@ -26,7 +26,7 @@ func (repository *PlayerRepository) FindById(id int) (casino.Player, error) {
 	return player, nil
 }
 
-func NewPlayerRepository(conn *db.DbConnection) PlayerRepositoryType {
+func NewPlayerRepository(conn *db.DbConnectionPool) PlayerRepositoryType {
 	return &PlayerRepository{
 		conn,
 	}
