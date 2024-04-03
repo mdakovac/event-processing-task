@@ -26,7 +26,7 @@ func (repository *PlayerRepository) FindById(id int) (casino.Player, error) {
 	return player, nil
 }
 
-func NewPlayerRepository(conn *db.DbConnection) *PlayerRepository {
+func NewPlayerRepository(conn *db.DbConnection) PlayerRepositoryType {
 	return &PlayerRepository{
 		conn,
 	}

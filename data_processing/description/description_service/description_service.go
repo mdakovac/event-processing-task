@@ -9,11 +9,11 @@ import (
 )
 
 type DescriptionService struct {
-	currencyService *currency_service.CurrencyService
+	currencyService currency_service.CurrencyServiceType
 }
 
 type DescriptionServiceType interface {
-	AssignDescriptionData(event *casino.Event) *casino.Event
+	AssignDescription(event *casino.Event) *casino.Event
 }
 
 func (service *DescriptionService) AssignDescription(event *casino.Event) *casino.Event {
@@ -110,7 +110,7 @@ func formatAmount(amount float64, currency string, amountEur float64) string {
 	return formattedAmountWithCurrency
 }
 
-func NewDescriptionService(currencyService *currency_service.CurrencyService) *DescriptionService {
+func NewDescriptionService(currencyService currency_service.CurrencyServiceType) DescriptionServiceType {
 	return &DescriptionService{
 		currencyService,
 	}

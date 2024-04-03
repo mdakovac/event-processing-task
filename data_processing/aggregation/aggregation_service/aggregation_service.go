@@ -114,7 +114,7 @@ func updateAggregationTopPlayer(s *aggregation_models.TopPlayer, id int, count i
 	log.Println("Aggregation event", string(forPrint1))
 } */
 
-func NewAggregationService() *AggregationService {
+func NewAggregationService() AggregationServiceType {
 	return &AggregationService{
 		winsByPlayer:     make(aggregation_models.CountByPlayerId),
 		betsByPlayer:     make(aggregation_models.CountByPlayerId),

@@ -26,7 +26,7 @@ func (service *PlayerService) AssignPlayerData(event *casino.Event) (*casino.Eve
 	return event, nil
 }
 
-func NewPlayerService(repository player_repository.PlayerRepositoryType) *PlayerService {
+func NewPlayerService(repository player_repository.PlayerRepositoryType) PlayerServiceType {
 	return &PlayerService{
 		repository,
 	}

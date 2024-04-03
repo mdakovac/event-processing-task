@@ -68,7 +68,7 @@ func findFromCache(cache *cache_service.Cache) currency_models.ExchangeRates {
 	return nil
 }
 
-func NewCurrencyRepository(cache *cache_service.Cache) *CurrencyRepository {
+func NewCurrencyRepository(cache *cache_service.Cache) CurrencyRepositoryType {
 	return &CurrencyRepository{
 		cache,
 	}

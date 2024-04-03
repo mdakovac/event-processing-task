@@ -76,10 +76,10 @@ func main() {
 
 func handleMessageReceived(
 	data []byte, 
-	currencyService *currency_service.CurrencyService, 
-	playerService *player_service.PlayerService, 
-	descriptionService *description_service.DescriptionService, 
-	aggregationService *aggregation_service.AggregationService,
+	currencyService currency_service.CurrencyServiceType, 
+	playerService player_service.PlayerServiceType, 
+	descriptionService description_service.DescriptionServiceType, 
+	aggregationService aggregation_service.AggregationServiceType,
 ) error {
 	var event casino.Event
 	if err := json.Unmarshal(data, &event); err != nil {

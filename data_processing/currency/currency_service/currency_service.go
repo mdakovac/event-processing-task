@@ -55,7 +55,7 @@ func (*CurrencyService) ConvertAmountToFloat(amount int, currency string) float6
 	return amountFloat
 }
 
-func NewCurrencyService(repository currency_repository.CurrencyRepositoryType) *CurrencyService {
+func NewCurrencyService(repository currency_repository.CurrencyRepositoryType) CurrencyServiceType {
 	return &CurrencyService{
 		repository,
 	}
