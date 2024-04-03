@@ -64,7 +64,7 @@ func main() {
 	// Setup Gin router
 	router := gin.Default()
 	aggregation_controller.SetupAggregationController(router, aggregationService)
-	router.Run("localhost:7777")
+	router.Run()
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
