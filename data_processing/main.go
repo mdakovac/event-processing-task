@@ -51,7 +51,7 @@ func main() {
 			err := handleMessageReceived(msg.Data, currencyService, playerService, descriptionService, aggregationService)
 			if err != nil {
 				msg.Nack()
-			}else{
+			} else {
 				msg.Ack()
 			}
 		})
@@ -60,7 +60,6 @@ func main() {
 		}
 	}()
 	log.Println("Pub/Sub listener started")
-
 
 	// Setup Gin router
 	router := gin.Default()
@@ -75,10 +74,10 @@ func main() {
 }
 
 func handleMessageReceived(
-	data []byte, 
-	currencyService currency_service.CurrencyServiceType, 
-	playerService player_service.PlayerServiceType, 
-	descriptionService description_service.DescriptionServiceType, 
+	data []byte,
+	currencyService currency_service.CurrencyServiceType,
+	playerService player_service.PlayerServiceType,
+	descriptionService description_service.DescriptionServiceType,
 	aggregationService aggregation_service.AggregationServiceType,
 ) error {
 	var event casino.Event

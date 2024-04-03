@@ -28,18 +28,18 @@ func (service *CurrencyService) ConvertCurrency(event *casino.Event) (*casino.Ev
 	if event.Currency == "EUR" {
 		event.AmountEUR = event.Amount
 		return event, nil
-	} else {
-		exchangeRates, err := service.repository.GetExchangeRates()
-		if err != nil {
-			log.Println("Error getting exchange rates", err)
-			return event, err
-		}
-
-		amountFloat := service.ConvertAmountToFloat(event.Amount, event.Currency)
-
-		amountEurFloat := math_utils.ToFixed(amountFloat*exchangeRates[event.Currency], 2)
-		event.AmountEUR = int(amountEurFloat * conversionConstant)
 	}
+
+	exchangeRates, err := service.repository.GetExchangeRates()
+	if err != nil {
+		log.Println("Error getting exchange rates", err)
+		return event, err
+	}
+
+	amountFloat := service.ConvertAmountToFloat(event.Amount, event.Currency)
+
+	amountEurFloat := math_utils.ToFixed(amountFloat*exchangeRates[event.Currency], 2)
+	event.AmountEUR = int(amountEurFloat * conversionConstant)
 
 	return event, nil
 }
