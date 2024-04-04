@@ -61,10 +61,11 @@ func main() {
 	}()
 	log.Println("Pub/Sub listener started")
 
-	// Setup Gin router
-	router := gin.Default()
-	aggregation_controller.SetupAggregationController(router, aggregationService)
-	router.Run()
+	go func() {
+		router := gin.Default()
+		aggregation_controller.SetupAggregationController(router, aggregationService)
+		router.Run()
+	}()
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
