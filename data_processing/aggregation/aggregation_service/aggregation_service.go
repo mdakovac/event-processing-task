@@ -67,11 +67,12 @@ func (service *aggregationService) GetAggregation() *aggregation_models.Aggregat
 }
 
 func updateAggregationEventsPerMinute(earliestEventTimestamp *time.Time, aggregation *aggregation_models.Aggregation) {
-	minutesElapsed := time.Since(*earliestEventTimestamp).Minutes()
-
-	if minutesElapsed >= 0 {
-		aggregation.EventsPerMinute = float64(aggregation.EventsTotal) / minutesElapsed
+	if(earliestEventTimestamp.IsZero()){
+		return
 	}
+
+	minutesElapsed := time.Since(*earliestEventTimestamp).Minutes()
+	aggregation.EventsPerMinute = float64(aggregation.EventsTotal) / minutesElapsed
 }
 
 type IntOrString interface {
