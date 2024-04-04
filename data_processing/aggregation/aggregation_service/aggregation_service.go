@@ -67,7 +67,7 @@ func (service *aggregationService) GetAggregation() *aggregation_models.Aggregat
 }
 
 func updateAggregationEventsPerMinute(earliestEventTimestamp *time.Time, aggregation *aggregation_models.Aggregation) {
-	if(earliestEventTimestamp.IsZero()){
+	if earliestEventTimestamp.IsZero() {
 		return
 	}
 
