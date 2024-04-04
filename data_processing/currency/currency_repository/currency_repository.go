@@ -11,7 +11,7 @@ import (
 	"github.com/Bitstarz-eng/event-processing-challenge/util/env_vars"
 )
 
-type CurrencyRepository struct {
+type currencyRepository struct {
 	cache *cache_service.Cache
 }
 
@@ -19,7 +19,7 @@ type CurrencyRepositoryType interface {
 	GetExchangeRates() (currency_models.ExchangeRates, error)
 }
 
-func (repository *CurrencyRepository) GetExchangeRates() (currency_models.ExchangeRates, error) {
+func (repository *currencyRepository) GetExchangeRates() (currency_models.ExchangeRates, error) {
 	var exchangeRates currency_models.ExchangeRates
 
 	exchangeRates = findFromCache(repository.cache)
@@ -69,7 +69,7 @@ func findFromCache(cache *cache_service.Cache) currency_models.ExchangeRates {
 }
 
 func NewCurrencyRepository(cache *cache_service.Cache) CurrencyRepositoryType {
-	return &CurrencyRepository{
+	return &currencyRepository{
 		cache,
 	}
 }

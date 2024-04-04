@@ -2,11 +2,18 @@ package casino
 
 import "time"
 
+const (
+	EventTypeGameStart = "game_start"
+	EventTypeBet       = "bet"
+	EventTypeDeposit   = "deposit"
+	EventTypeGameStop  = "game_stop"
+)
+
 var EventTypes = []string{
-	"game_start",
-	"bet",
-	"deposit",
-	"game_stop",
+	EventTypeGameStart,
+	EventTypeBet,
+	EventTypeDeposit,
+	EventTypeGameStop,
 }
 
 type Event struct {

@@ -60,17 +60,17 @@ func GetSubscription(client *Client, subscriptionId string, topic *Topic) *Subsc
 
 	if exists {
 		return subscription
-	} else {
-		log.Println("Creating subscription")
-		subscription, err = client.CreateSubscription(ctx, subscriptionId, pubsub.SubscriptionConfig{
-			Topic: topic,
-		})
-		if err != nil {
-			log.Fatalf("Failed to create subscription: %v", err)
-		}
-
-		return subscription
 	}
+
+	log.Println("Creating subscription")
+	subscription, err = client.CreateSubscription(ctx, subscriptionId, pubsub.SubscriptionConfig{
+		Topic: topic,
+	})
+	if err != nil {
+		log.Fatalf("Failed to create subscription: %v", err)
+	}
+
+	return subscription
 }
 
 func createTopicIfNotExists(client *Client, t string) *Topic {
@@ -84,12 +84,12 @@ func createTopicIfNotExists(client *Client, t string) *Topic {
 
 	if exists {
 		return topic
-	} else {
-		topic, err := client.CreateTopic(ctx, t)
-		if err != nil {
-			log.Fatalf("Failed to create topic: %v", err)
-		}
-		log.Printf("Topic %s created.\n", t)
-		return topic
 	}
+
+	topic, err = client.CreateTopic(ctx, t)
+	if err != nil {
+		log.Fatalf("Failed to create topic: %v", err)
+	}
+	log.Printf("Topic %s created.\n", t)
+	return topic
 }

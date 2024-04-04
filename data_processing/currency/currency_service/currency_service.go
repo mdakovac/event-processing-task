@@ -8,7 +8,7 @@ import (
 	"github.com/Bitstarz-eng/event-processing-challenge/util/math_utils"
 )
 
-type CurrencyService struct {
+type currencyService struct {
 	repository currency_repository.CurrencyRepositoryType
 }
 
@@ -20,12 +20,12 @@ type CurrencyServiceType interface {
 const conversionConstant float64 = 100
 const btcConversionConstant float64 = 100000000
 
-func (service *CurrencyService) ConvertCurrency(event *casino.Event) (*casino.Event, error) {
-	if event.Type != "bet" && event.Type != "deposit" {
+func (service *currencyService) ConvertCurrency(event *casino.Event) (*casino.Event, error) {
+	if event.Type != casino.EventTypeBet && event.Type != casino.EventTypeDeposit {
 		return event, nil
 	}
 
-	if event.Currency == "EUR" {
+	if event.Currency == casino.CurrencyEUR {
 		event.AmountEUR = event.Amount
 		return event, nil
 	}
@@ -44,19 +44,18 @@ func (service *CurrencyService) ConvertCurrency(event *casino.Event) (*casino.Ev
 	return event, nil
 }
 
-func (*CurrencyService) ConvertAmountToFloat(amount int, currency string) float64 {
-	var amountFloat float64
-	if currency == "BTC" {
-		amountFloat = float64(amount) / btcConversionConstant
-	} else {
-		amountFloat = float64(amount) / conversionConstant
+func (*currencyService) ConvertAmountToFloat(amount int, currency string) float64 {
+	cc := conversionConstant
+	if currency == casino.CurrencyBTC {
+		cc = btcConversionConstant
 	}
 
+	amountFloat := float64(amount) / cc
 	return amountFloat
 }
 
 func NewCurrencyService(repository currency_repository.CurrencyRepositoryType) CurrencyServiceType {
-	return &CurrencyService{
+	return &currencyService{
 		repository,
 	}
 }

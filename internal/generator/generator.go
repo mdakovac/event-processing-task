@@ -55,7 +55,7 @@ func randomAmountCurrency() (amount int, currency string) {
 	currency = casino.Currencies[rand.Intn(len(casino.Currencies))]
 
 	switch currency {
-	case "BTC":
+	case casino.CurrencyBTC:
 		amount = rand.Intn(1e5)
 	default:
 		amount = rand.Intn(2000)

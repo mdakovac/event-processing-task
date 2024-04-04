@@ -7,7 +7,7 @@ import (
 	"github.com/Bitstarz-eng/event-processing-challenge/internal/casino"
 )
 
-type PlayerService struct {
+type playerService struct {
 	repository player_repository.PlayerRepositoryType
 }
 
@@ -15,7 +15,7 @@ type PlayerServiceType interface {
 	AssignPlayerData(event *casino.Event) (*casino.Event, error)
 }
 
-func (service *PlayerService) AssignPlayerData(event *casino.Event) (*casino.Event, error) {
+func (service *playerService) AssignPlayerData(event *casino.Event) (*casino.Event, error) {
 	player, err := service.repository.FindById(event.PlayerID)
 	if err != nil {
 		log.Printf("Unable to find Player Data for event id %v", event.ID)
@@ -27,7 +27,7 @@ func (service *PlayerService) AssignPlayerData(event *casino.Event) (*casino.Eve
 }
 
 func NewPlayerService(repository player_repository.PlayerRepositoryType) PlayerServiceType {
-	return &PlayerService{
+	return &playerService{
 		repository,
 	}
 }

@@ -2,13 +2,14 @@ package description_service
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/Bitstarz-eng/event-processing-challenge/data_processing/currency/currency_service"
 	"github.com/Bitstarz-eng/event-processing-challenge/internal/casino"
 )
 
-type DescriptionService struct {
+type descriptionService struct {
 	currencyService currency_service.CurrencyServiceType
 }
 
@@ -16,32 +17,32 @@ type DescriptionServiceType interface {
 	AssignDescription(event *casino.Event) *casino.Event
 }
 
-func (service *DescriptionService) AssignDescription(event *casino.Event) *casino.Event {
+func (service *descriptionService) AssignDescription(event *casino.Event) *casino.Event {
 	var formattedPlayerInfo = formatPlayerInfo(event.PlayerID, event.Player.Email)
 	var formattedDate = formatDate(event.CreatedAt)
 
 	var description string
-	if event.Type == "game_start" || event.Type == "game_stop" {
+	if event.Type == casino.EventTypeGameStart || event.Type == casino.EventTypeGameStop {
 		description = fmt.Sprintf("%s %s playing a game \"%s\" on %s",
 			formattedPlayerInfo,
 			getGamePlayingStatus(event.Type),
-			casino.Games[event.GameID].Title,
+			getGameTitle(event.GameID),
 			formattedDate,
 		)
 	} else {
 		var formattedAmount = formatAmount(
 			service.currencyService.ConvertAmountToFloat(event.Amount, event.Currency),
 			event.Currency,
-			service.currencyService.ConvertAmountToFloat(event.AmountEUR, "EUR"),
+			service.currencyService.ConvertAmountToFloat(event.AmountEUR, casino.CurrencyEUR),
 		)
-		if event.Type == "deposit" {
+		if event.Type == casino.EventTypeDeposit {
 			description = fmt.Sprintf("%s made a deposit of %s on %s", formattedPlayerInfo, formattedAmount, formattedDate)
 
 		} else {
 			description = fmt.Sprintf("%s placed a bet of %s on a game \"%s\" on %s",
 				formattedPlayerInfo,
 				formattedAmount,
-				casino.Games[event.GameID].Title,
+				getGameTitle(event.GameID),
 				formattedDate,
 			)
 		}
@@ -61,7 +62,7 @@ func formatPlayerInfo(playerId int, playerEmail string) string {
 }
 
 func getGamePlayingStatus(eventType string) string {
-	if eventType == "game_start" {
+	if eventType == casino.EventTypeGameStart {
 		return "started"
 	}
 	return "stopped"
@@ -96,22 +97,32 @@ func getOrdinalNumber(n int) string {
 
 func formatAmount(amount float64, currency string, amountEur float64) string {
 	var formattedAmount string
-	if currency == "BTC" {
-		formattedAmount = fmt.Sprintf("%f", amount)
+	if currency == casino.CurrencyBTC {
+		formattedAmount = fmt.Sprintf("%.8f", amount)
 	} else {
 		formattedAmount = fmt.Sprintf("%.2f", amount)
 	}
 
 	formattedAmountWithCurrency := fmt.Sprintf("%s %s", formattedAmount, currency)
-	if currency != "EUR" {
+	if currency != casino.CurrencyEUR {
 		formattedAmountWithCurrency += fmt.Sprintf(" (%.2f EUR)", amountEur)
 	}
 
 	return formattedAmountWithCurrency
 }
 
+func getGameTitle(gameId int) string {
+	data, exists := casino.Games[gameId]
+	if !exists {
+		log.Printf("Casino game with id %d doesn't exist", gameId)
+		return ""
+	}
+
+	return data.Title
+}
+
 func NewDescriptionService(currencyService currency_service.CurrencyServiceType) DescriptionServiceType {
-	return &DescriptionService{
+	return &descriptionService{
 		currencyService,
 	}
 }

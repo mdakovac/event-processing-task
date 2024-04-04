@@ -69,8 +69,6 @@ func main() {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 	<-stop
-
-	log.Println("Shutting down Pub/Sub listener")
 }
 
 func handleMessageReceived(

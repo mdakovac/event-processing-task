@@ -8,7 +8,7 @@ import (
 	"github.com/Bitstarz-eng/event-processing-challenge/internal/casino"
 )
 
-type AggregationService struct {
+type aggregationService struct {
 	aggregation aggregation_models.Aggregation
 
 	winsByPlayer     aggregation_models.CountByPlayerId
@@ -26,7 +26,7 @@ type AggregationServiceType interface {
 	GetAggregation() *aggregation_models.Aggregation
 }
 
-func (service *AggregationService) AddEventToAggregation(event *casino.Event) {
+func (service *aggregationService) AddEventToAggregation(event *casino.Event) {
 	service.mutex.Lock()
 	defer service.mutex.Unlock()
 
@@ -37,7 +37,7 @@ func (service *AggregationService) AddEventToAggregation(event *casino.Event) {
 		service.earliestEventTimestamp = event.CreatedAt
 	}
 
-	if event.Type == "bet" {
+	if event.Type == casino.EventTypeBet {
 		incrementMapValue(service.betsByPlayer, event.PlayerID)
 		key, value := findMaxValue(service.betsByPlayer)
 		updateAggregationTopPlayer(&service.aggregation.TopPlayerBets, key, value)
@@ -48,14 +48,14 @@ func (service *AggregationService) AddEventToAggregation(event *casino.Event) {
 			updateAggregationTopPlayer(&service.aggregation.TopPlayerWins, key, value)
 		}
 
-	} else if event.Type == "deposit" {
+	} else if event.Type == casino.EventTypeDeposit {
 		incrementMapValue(service.depositsByPlayer, event.PlayerID)
 		key, value := findMaxValue(service.depositsByPlayer)
 		updateAggregationTopPlayer(&service.aggregation.TopPlayerDeposits, key, value)
 	}
 }
 
-func (service *AggregationService) GetAggregation() *aggregation_models.Aggregation {
+func (service *aggregationService) GetAggregation() *aggregation_models.Aggregation {
 	// stil need RW Lock since getting the Aggregation also updates fields
 	service.mutex.Lock()
 	defer service.mutex.Unlock()
@@ -69,7 +69,7 @@ func (service *AggregationService) GetAggregation() *aggregation_models.Aggregat
 func updateAggregationEventsPerMinute(earliestEventTimestamp *time.Time, aggregation *aggregation_models.Aggregation) {
 	minutesElapsed := time.Since(*earliestEventTimestamp).Minutes()
 
-	if minutesElapsed >= 1 {
+	if minutesElapsed >= 0 {
 		aggregation.EventsPerMinute = float64(aggregation.EventsTotal) / minutesElapsed
 	}
 }
@@ -92,9 +92,7 @@ func findMaxValue(m map[int]int) (int, int) {
 	var maxKey int
 	var maxValue int
 
-	// Iterate through the map
 	for key, value := range m {
-		// If current value is greater than max value, update max value and max key
 		if value > maxValue {
 			maxValue = value
 			maxKey = key
@@ -115,7 +113,7 @@ func updateAggregationTopPlayer(s *aggregation_models.TopPlayer, id int, count i
 } */
 
 func NewAggregationService() AggregationServiceType {
-	return &AggregationService{
+	return &aggregationService{
 		winsByPlayer:     make(aggregation_models.CountByPlayerId),
 		betsByPlayer:     make(aggregation_models.CountByPlayerId),
 		depositsByPlayer: make(aggregation_models.CountByPlayerId),
