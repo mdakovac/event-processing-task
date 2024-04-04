@@ -15,14 +15,22 @@ type Message = pubsub.Message
 type Subscription = pubsub.Subscription
 type SubscriptionConfig = pubsub.SubscriptionConfig
 
+const (
+	TopicCasinoEventCreate = "CasinoEvent.Create"
+)
+
+var topics = []string{
+	TopicCasinoEventCreate,
+}
+
 func Setup() (*Client, map[string]*Topic) {
 	env_vars.SetEnvVars()
 	projectId := env_vars.EnvVariables.PUBSUB_PROJECT_ID
 
-	client := CreateClient(projectId)
-	topics := GetTopics(client)
+	c := CreateClient(projectId)
+	t := CreateTopics(c)
 
-	return client, topics
+	return c, t
 }
 
 func CreateClient(projectId string) *Client {
@@ -37,16 +45,14 @@ func CreateClient(projectId string) *Client {
 	return client
 }
 
-func GetTopics(client *Client) map[string]*Topic {
-	topicNames := []string{"CasinoEvent.create"}
-
-	topics := make(map[string]*Topic)
-	for _, v := range topicNames {
+func CreateTopics(client *Client) map[string]*Topic {
+	t := make(map[string]*Topic)
+	for _, v := range topics {
 		topic := createTopicIfNotExists(client, v)
-		topics[v] = topic
+		t[v] = topic
 	}
 
-	return topics
+	return t
 }
 
 func GetSubscription(client *Client, subscriptionId string, topic *Topic) *Subscription {

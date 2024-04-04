@@ -42,7 +42,7 @@ func main() {
 	client, topics := pubsub.Setup()
 
 	subscriptionId := "data_processing_service.subscription"
-	subscription := pubsub.GetSubscription(client, subscriptionId, topics["CasinoEvent.create"])
+	subscription := pubsub.GetSubscription(client, subscriptionId, topics[pubsub.TopicCasinoEventCreate])
 
 	go func() {
 		err := subscription.Receive(context.Background(), func(ctx context.Context, msg *pubsub.Message) {

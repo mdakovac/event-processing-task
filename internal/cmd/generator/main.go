@@ -11,10 +11,10 @@ import (
 )
 
 func main() {
+	_, topics := pubsub.Setup()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	_, topics := pubsub.Setup()
 
 	eventCh := generator.Generate(ctx)
 
@@ -26,9 +26,8 @@ func main() {
 			log.Fatalf("Failed to marshal message: %v", err)
 		}
 
-		topics["CasinoEvent.create"].Publish(ctx, &pubsub.Message{Data: msgJson})
+		topics[pubsub.TopicCasinoEventCreate].Publish(ctx, &pubsub.Message{Data: msgJson})
 	}
 
-	topics["CasinoEvent.create"].Stop()
 	log.Println("finished")
 }
