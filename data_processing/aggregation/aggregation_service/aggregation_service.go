@@ -18,7 +18,7 @@ type aggregationService struct {
 
 	earliestEventTimestamp time.Time
 
-	mutex sync.RWMutex
+	mutex sync.Mutex
 }
 
 type AggregationServiceType interface {

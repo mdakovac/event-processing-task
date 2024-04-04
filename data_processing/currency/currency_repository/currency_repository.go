@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/Bitstarz-eng/event-processing-challenge/cache_service"
@@ -13,6 +14,7 @@ import (
 
 type currencyRepository struct {
 	cache *cache_service.Cache
+	mutex sync.Mutex
 }
 
 type CurrencyRepositoryType interface {
@@ -22,6 +24,9 @@ type CurrencyRepositoryType interface {
 func (repository *currencyRepository) GetExchangeRates() (currency_models.ExchangeRates, error) {
 	var exchangeRates currency_models.ExchangeRates
 
+	repository.mutex.Lock()
+	defer repository.mutex.Unlock()
+	
 	exchangeRates = findFromCache(repository.cache)
 	if exchangeRates != nil {
 		return exchangeRates, nil
@@ -70,6 +75,6 @@ func findFromCache(cache *cache_service.Cache) currency_models.ExchangeRates {
 
 func NewCurrencyRepository(cache *cache_service.Cache) CurrencyRepositoryType {
 	return &currencyRepository{
-		cache,
+		cache: cache,
 	}
 }
