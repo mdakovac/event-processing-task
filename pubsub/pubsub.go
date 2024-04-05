@@ -24,7 +24,6 @@ var topics = []string{
 }
 
 func Setup() (*Client, map[string]*Topic) {
-	env_vars.SetEnvVars()
 	projectId := env_vars.EnvVariables.PUBSUB_PROJECT_ID
 
 	c := CreateClient(projectId)

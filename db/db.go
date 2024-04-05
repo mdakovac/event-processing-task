@@ -11,7 +11,6 @@ import (
 type DbConnectionPool = pgxpool.Pool
 
 func Connect() *DbConnectionPool {
-	env_vars.SetEnvVars()
 	var connectionString = env_vars.EnvVariables.DB_CONNECTION_URL
 	
 	log.Println("Connecting to DB with connection string:", connectionString)
