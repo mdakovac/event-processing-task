@@ -20,13 +20,10 @@ import (
 	"github.com/Bitstarz-eng/event-processing-challenge/db"
 	"github.com/Bitstarz-eng/event-processing-challenge/internal/casino"
 	"github.com/Bitstarz-eng/event-processing-challenge/pubsub"
-	"github.com/Bitstarz-eng/event-processing-challenge/util/env_vars"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	env_vars.SetEnvVars()
-
 	db := db.Connect()
 
 	var currencyRepository = currency_repository.NewCurrencyRepository(cache_service.CreateCache(1*time.Minute, 1*time.Minute))
