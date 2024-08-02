@@ -86,7 +86,7 @@ func handleMessageReceived(
 	playerService.AssignPlayerData(&event)
 	descriptionService.AssignDescription(&event)
 
-	aggregationService.AddEventToAggregation(&event)
+	//aggregationService.AddEventToAggregation(&event)
 
 	forPrint, _ := json.MarshalIndent(event, "", "    ")
 	log.Println("Enriched event", string(forPrint))
